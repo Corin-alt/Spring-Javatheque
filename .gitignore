@@ -54,10 +54,6 @@ logs/
 src/main/resources/application.properties
 application-local.properties
 
-# Docker configuration (may contain sensitive info)
-Dockerfile
-docker-compose.yml
-
 # Database
 mysql_data/
 
