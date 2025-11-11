@@ -61,3 +61,4 @@ docker-compose.yml
 # Database
 mysql_data/
 
+.env

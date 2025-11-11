@@ -9,10 +9,10 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🔍 Rechercher un film</h1>
+            <h1>RECHERCHER UN FILM</h1>
             <div class="header-actions">
-                <a href="/library.html" class="back-link">&larr; Retour à ma bibliothèque</a>
-                <button id="logout-btn" class="btn">👋 Déconnexion</button>
+                <a href="/library.html" class="back-link">&larr; Retour à ma vidéothèque</a>
+                <button id="logout-btn" class="btn">Déconnexion</button>
             </div>
         </header>
 
@@ -26,22 +26,17 @@
                         <input type="text" id="title" name="title" required>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="language">Langue</label>
-                            <select id="language" name="language">
-                                <option value="fr-FR">Français</option>
-                                <option value="en-US">Anglais</option>
-                                <option value="es-ES">Espagnol</option>
-                                <option value="de-DE">Allemand</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="page">Page</label>
-                            <input type="number" id="page" name="page" value="1" min="1">
-                        </div>
+                    <div class="form-group">
+                        <label for="language">Langue</label>
+                        <select id="language" name="language">
+                            <option value="fr-FR">Français</option>
+                            <option value="en-US">Anglais</option>
+                            <option value="es-ES">Espagnol</option>
+                            <option value="de-DE">Allemand</option>
+                        </select>
                     </div>
+                    
+                    <input type="hidden" id="page" name="page" value="1">
                     
                     <button type="submit" class="btn btn-primary btn-block">Rechercher</button>
                 </form>
@@ -50,7 +45,7 @@
             <div id="loading" class="loading" style="display: none;">Recherche en cours...</div>
             <div id="error-message" class="error-message" style="display: none;"></div>
             
-            <div id="results" class="films-grid" style="display: none;">
+            <div id="results" style="display: none;">
                 <!-- Results will be loaded here -->
             </div>
         </main>

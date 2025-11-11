@@ -18,7 +18,7 @@ const showConfirm = (options) => {
         modal.className = 'confirm-modal';
         modal.innerHTML = `
             <div class="confirm-content">
-                <div class="confirm-icon">${options.icon || '⚠️'}</div>
+                <div class="confirm-icon">${options.icon || '[!]'}</div>
                 <h2 class="confirm-title">${options.title || 'Confirmation'}</h2>
                 <p class="confirm-message">${options.message || 'Êtes-vous sûr ?'}</p>
                 <div class="confirm-buttons">
@@ -126,10 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             const confirmed = await showConfirm({
-                icon: '👋',
+                icon: '[>]',
                 title: 'Se déconnecter ?',
                 message: 'Êtes-vous sûr de vouloir vous déconnecter ?',
-                confirmText: '👋 Déconnexion',
+                confirmText: 'Déconnexion',
                 cancelText: 'Rester connecté',
                 confirmClass: 'btn-delete'
             });

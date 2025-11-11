@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     if (userInfo) {
-        userInfo.textContent = `👤 ${user.firstname} ${user.lastname}`;
+        userInfo.textContent = `${user.firstname} ${user.lastname}`;
     }
     
     // Load films
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="film-info">
                         <div class="film-title">${film.title}</div>
                         <div class="film-year">${film.year}</div>
-                        ${film.rate ? `<div class="film-rate">⭐ ${film.rate}/10</div>` : ''}
+                        ${film.rate ? `<div class="film-rate">${film.rate}/10</div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -80,14 +80,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p><strong>Langue:</strong> ${film.lang}</p>
                         <p><strong>Support:</strong> ${film.support}</p>
                         <p><strong>Réalisateur:</strong> ${film.director?.firstname} ${film.director?.lastname}</p>
-                        ${film.rate ? `<p><strong>Note:</strong> ⭐ ${film.rate}/10</p>` : ''}
+                        ${film.rate ? `<p><strong>Note:</strong> ${film.rate}/10</p>` : ''}
                         ${film.opinion ? `<p><strong>Avis:</strong> ${film.opinion}</p>` : ''}
                         <p><strong>Description:</strong> ${film.description}</p>
                         ${film.actors?.length > 0 ? `
                             <p><strong>Acteurs:</strong> ${film.actors.slice(0, 5).map(a => `${a.firstname} ${a.lastname}`).join(', ')}</p>
                         ` : ''}
                         <div style="margin-top: 20px;">
-                            <button onclick="deleteFilm(${film.id})" class="btn btn-delete">🗑️ Supprimer</button>
+                            <button onclick="deleteFilm(${film.id})" class="btn btn-delete">[X] Supprimer</button>
                         </div>
                     </div>
                 </div>
@@ -103,10 +103,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Delete film
     window.deleteFilm = async (filmId) => {
         const confirmed = await showConfirm({
-            icon: '🗑️',
+            icon: '[X]',
             title: 'Supprimer ce film ?',
-            message: 'Êtes-vous sûr de vouloir supprimer ce film de votre bibliothèque ? Cette action est irréversible.',
-            confirmText: '🗑️ Supprimer',
+            message: 'Êtes-vous sûr de vouloir supprimer ce film de votre vidéothèque ? Cette action est irréversible.',
+            confirmText: '[X] Supprimer',
             cancelText: 'Annuler',
             confirmClass: 'btn-delete'
         });

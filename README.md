@@ -5,10 +5,11 @@ A REST API to manage a personal movie library, built with Spring Boot, Spring Da
 ## Features
 
 - **User Authentication**: Registration, login and logout with session management
-- **Library Management**: Each user has their own movie library
+- **Library Management**: Each user has their own movie library (Vidéothèque)
 - **Movie Management**: Add, update, delete and search movies
-- **TMDB Integration**: Search and automatically retrieve movie information from TMDB
+- **TMDB Integration**: Search and automatically retrieve movie information from TMDB with pagination
 - **REST API**: Documented RESTful endpoints
+- **Retro Gaming UI**: Pixel art black & white theme inspired by classic arcade games
 
 ## Technologies
 
@@ -48,71 +49,66 @@ src/main/java/fr/corentin/javatheque/
 ### 1. Clone the project
 
 ```bash
+git clone <repository-url>
 cd javatheque
 ```
 
-### 2. Configure MySQL
+### 2. Configure environment variables
 
-Create a MySQL database:
-
-```sql
-CREATE DATABASE javatheque CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 3. Configure the application
-
-Copy the example configuration file:
+Create a `.env` file at the root of the project:
 
 ```bash
-cp src/main/resources/application.properties.example src/main/resources/application.properties
+# Copy the example file
+cp .env.example .env
 ```
 
-Then edit `src/main/resources/application.properties` with your settings:
+Then edit the `.env` file with your settings:
 
-```properties
-# MySQL Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/javatheque?createDatabaseIfNotExist=true
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+```env
+# MySQL Database Configuration
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=javatheque
+MYSQL_USER=javatheque
+MYSQL_PASSWORD=your_secure_password
+
+# Spring Datasource Configuration
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/javatheque?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=root
 
 # TMDB API Configuration
-tmdb.api.key=your_tmdb_api_key
+# Get your API key at: https://www.themoviedb.org/settings/api
+TMDB_API_KEY=your_tmdb_api_key_here
+
+# Server Configuration
+SERVER_PORT=8080
+
+# Spring Profile (dev, prod)
+SPRING_PROFILES_ACTIVE=dev
 ```
 
-⚠️ **Important**: The `application.properties` file is ignored by git to protect your credentials.
+⚠️ **Important**: 
+- The `.env` file is ignored by git to protect your credentials
+- Get your free TMDB API key at https://www.themoviedb.org/settings/api
 
-### 4. Configure Docker (Optional)
+### 3. Run the application
 
-Copy the Docker example files:
+**Using Docker Compose**
 
 ```bash
-cp Dockerfile.example Dockerfile
-cp docker-compose.yml.example docker-compose.yml
-```
-
-Then edit `docker-compose.yml` with your credentials:
-- Replace `your_root_password` with a secure root password
-- Replace `your_mysql_user` with your MySQL username
-- Replace `your_mysql_password` with your MySQL password
-- Replace `your_tmdb_api_key_here` with your TMDB API key
-
-⚠️ **Important**: Docker files are ignored by git to protect your credentials.
-
-### 5. Run the application
-
-**Using Gradle (local):**
-```bash
-./gradlew bootRun
-```
-
-**Or using Docker Compose:**
-```bash
+# Build and start all services
 docker-compose up -d
+
+# Check logs
+docker-compose logs -f app
+
+# Stop services
+docker-compose down
 ```
 
 The application will be accessible at:
 - **Application**: http://localhost:8080
-- **phpMyAdmin**: http://localhost:8081 (only with Docker)
+- **API**: http://localhost:8080/api
 
 ## API Endpoints
 
@@ -135,43 +131,23 @@ The application will be accessible at:
 | `PUT` | `/api/films/{filmId}` | Update a movie | `{ "lang": "en", "support": "4K UHD", "rate": 10.0, "opinion": "Masterpiece!" }` |
 | `DELETE` | `/api/films/{filmId}` | Delete a movie | `{filmId}` = Movie ID |
 
-### 📚 Library
+### 📚 Vidéothèque (Library)
 
 | Method | Endpoint | Description | Parameters |
 |---------|----------|-------------|------------|
 | `GET` | `/api/library` | Get all movies from your library | - |
 | `GET` | `/api/library/search` | Search in your library | `?search=matrix` |
 
-### 📋 HTTP Response Codes
-
-| Code | Status | Description |
-|------|---------------|-------------|
-| `200` | OK | Request successful |
-| `201` | Created | Resource created successfully |
-| `204` | No Content | Deletion successful |
-| `400` | Bad Request | Invalid data |
-| `401` | Unauthorized | Not authenticated |
-| `403` | Forbidden | Access denied |
-| `404` | Not Found | Resource not found |
-| `500` | Internal Server Error | Server error |
-
-## Database Structure
-
-The database schema is managed by Liquibase and created automatically on startup:
-
-- **users**: Application users
-- **libraries**: Libraries (one per user)
-- **films**: Movies in libraries
-- **film_actors**: Association table for actors (ElementCollection)
 
 ## User Interface
 
-The application includes a modern and responsive web interface accessible via:
+The application includes a **retro gaming pixel art** web interface with a black & white theme inspired by classic arcade games:
+
 - **Home Page**: http://localhost:8080/
 - **Login**: http://localhost:8080/login.html
 - **Register**: http://localhost:8080/register.html
-- **Library**: http://localhost:8080/library.html (authentication required)
-- **Search**: http://localhost:8080/search.html (authentication required)
+- **Vidéothèque (Library)**: http://localhost:8080/library.html (authentication required)
+- **Search Movies**: http://localhost:8080/search.html (authentication required)
 
 ## DTOs Architecture
 
@@ -189,4 +165,26 @@ FilmDTO.SearchRequest   // TMDB search
 ResponseDTO.Success // Success response
 ResponseDTO.Error   // Error response
 ```
+
+## Environment Variables
+
+All sensitive configuration is managed through environment variables in the `.env` file:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MYSQL_ROOT_PASSWORD` | MySQL root password | `root` |
+| `MYSQL_DATABASE` | Database name | `javatheque` |
+| `MYSQL_USER` | MySQL user | `javatheque` |
+| `MYSQL_PASSWORD` | MySQL password | `javatheque123` |
+| `TMDB_API_KEY` | TMDB API key | `your_api_key` |
+| `SERVER_PORT` | Application port | `8080` |
+| `SPRING_PROFILES_ACTIVE` | Spring profile | `dev` or `prod` |
+
+## Author
+
+**Corentin** - 2024
+
+## License
+
+This project is private and not licensed for public use.
 

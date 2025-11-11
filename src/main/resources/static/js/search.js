@@ -13,13 +13,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Search form handler
     searchForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+        // Reset to page 1 when submitting a new search
+        document.getElementById('page').value = 1;
+        performSearch();
+    });
+    
+    const performSearch = async () => {
         const title = document.getElementById('title').value;
         const language = document.getElementById('language').value;
-        const page = document.getElementById('page').value;
+        const page = parseInt(document.getElementById('page').value) || 1;
         
         showLoading(true);
         results.style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
         
         try {
             const response = await apiCall(
@@ -28,26 +34,43 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             showLoading(false);
             
-            // TMDB returns {results: [...], page: ..., total_results: ...}
+            // TMDB returns {results: [...], page: ..., total_results: ..., total_pages: ...}
             const films = response?.results || [];
+            const currentPage = response?.page || 1;
+            const totalPages = response?.total_pages || 1;
             
             if (!films || films.length === 0) {
                 showError('error-message', 'Aucun résultat trouvé');
                 return;
             }
             
-            results.style.display = 'grid';
-            results.innerHTML = films.map(film => `
-                <div class="film-card" data-film='${JSON.stringify(film).replace(/'/g, "&#39;")}'>
-                    <img src="${getTMDBPosterUrl(film.poster_path)}" alt="${film.title}" class="film-poster" 
-                         onerror="this.src='/images/no-poster.jpg'">
-                    <div class="film-info">
-                        <div class="film-title">${film.title}</div>
-                        <div class="film-year">${film.release_date ? film.release_date.substring(0, 4) : 'N/A'}</div>
-                        ${film.vote_average ? `<div class="film-rate">⭐ ${film.vote_average.toFixed(1)}/10</div>` : ''}
-                    </div>
+            results.style.display = 'block';
+            results.innerHTML = `
+                <div class="films-grid">
+                    ${films.map(film => `
+                        <div class="film-card" data-film='${JSON.stringify(film).replace(/'/g, "&#39;")}'>
+                            <img src="${getTMDBPosterUrl(film.poster_path)}" alt="${film.title}" class="film-poster" 
+                                 onerror="this.src='/images/no-poster.jpg'">
+                            <div class="film-info">
+                                <div class="film-title">${film.title}</div>
+                                <div class="film-year">${film.release_date ? film.release_date.substring(0, 4) : 'N/A'}</div>
+                                ${film.vote_average ? `<div class="film-rate">${film.vote_average.toFixed(1)}/10</div>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
-            `).join('');
+                ${totalPages > 1 ? `
+                    <div class="pagination">
+                        <button class="btn btn-secondary" id="prev-page" ${currentPage <= 1 ? 'disabled' : ''}>
+                            &larr; Précédent
+                        </button>
+                        <span class="page-info">Page ${currentPage} / ${totalPages}</span>
+                        <button class="btn btn-secondary" id="next-page" ${currentPage >= totalPages ? 'disabled' : ''}>
+                            Suivant &rarr;
+                        </button>
+                    </div>
+                ` : ''}
+            `;
             
             // Add click handlers
             document.querySelectorAll('.film-card').forEach(card => {
@@ -57,11 +80,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             });
             
+            // Pagination handlers
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    document.getElementById('page').value = currentPage - 1;
+                    performSearch();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    document.getElementById('page').value = currentPage + 1;
+                    performSearch();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+            
         } catch (error) {
             showLoading(false);
             showError('error-message', 'Erreur lors de la recherche');
         }
-    });
+    };
     
     // Show add film modal
     const showAddModal = (film) => {
@@ -104,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <textarea id="opinion" rows="4"></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-block">Ajouter à ma bibliothèque</button>
+                <button type="submit" class="btn btn-primary btn-block">Ajouter à ma vidéothèque</button>
             </form>
         `;
         
@@ -126,11 +169,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     body: JSON.stringify({ tmdbId, lang, support, rate, opinion })
                 });
                 
-                // Redirection directe vers la bibliothèque (sans alerte)
+                // Redirection directe vers la vidéothèque (sans alerte)
                 window.location.href = '/library.html';
             } catch (error) {
                 modal.style.display = 'none';
-                showError('error-message', 'Erreur lors de l\'ajout du film. Il est peut-être déjà dans votre bibliothèque.');
+                showError('error-message', 'Erreur lors de l\'ajout du film. Il est peut-être déjà dans votre vidéothèque.');
             }
         });
     };
