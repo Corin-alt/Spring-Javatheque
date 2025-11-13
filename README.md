@@ -170,15 +170,82 @@ ResponseDTO.Error   // Error response
 
 All sensitive configuration is managed through environment variables in the `.env` file:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `MYSQL_ROOT_PASSWORD` | MySQL root password | `root` |
-| `MYSQL_DATABASE` | Database name | `javatheque` |
-| `MYSQL_USER` | MySQL user | `javatheque` |
-| `MYSQL_PASSWORD` | MySQL password | `javatheque123` |
-| `TMDB_API_KEY` | TMDB API key | `your_api_key` |
-| `SERVER_PORT` | Application port | `8080` |
-| `SPRING_PROFILES_ACTIVE` | Spring profile | `dev` or `prod` |
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `MYSQL_ROOT_PASSWORD` | MySQL root password | `root` | Yes |
+| `MYSQL_DATABASE` | Database name | `javatheque` | Yes |
+| `MYSQL_USER` | MySQL user | `javatheque` | Yes |
+| `MYSQL_PASSWORD` | MySQL password | `javatheque123` | Yes |
+| `TMDB_API_KEY` | TMDB API key | `your_api_key` | Yes |
+| `SERVER_PORT` | Application port | `8080` | No (default: 8080) |
+| `SPRING_PROFILES_ACTIVE` | Spring profile | `dev` or `prod` | No (default: dev) |
+| `CORS_ALLOWED_ORIGINS` | Allowed CORS origins (comma-separated) | `https://myapp.com,http://localhost:3000` | No (default: localhost) |
+| `SESSION_COOKIE_SECURE` | Enable secure cookies (HTTPS only) | `true` or `false` | No (default: false) |
+
+## Production Deployment
+
+When deploying to production, make sure to configure the following environment variables:
+
+### Required for Production
+
+1. **CORS Configuration**: Add your production domain to allowed origins
+
+```bash
+# Example for production with HTTPS
+CORS_ALLOWED_ORIGINS=https://javatheque.yourdomain.com
+
+# Or multiple domains (comma-separated, no spaces)
+CORS_ALLOWED_ORIGINS=https://javatheque.yourdomain.com,https://app.yourdomain.com
+```
+
+2. **Secure Cookies**: Enable secure cookies for HTTPS
+
+```bash
+SESSION_COOKIE_SECURE=true
+```
+
+### Example Production Configuration
+
+```bash
+# Production .env file
+MYSQL_ROOT_PASSWORD=your_secure_root_password
+MYSQL_DATABASE=javatheque
+MYSQL_USER=javatheque
+MYSQL_PASSWORD=your_secure_password
+TMDB_API_KEY=your_tmdb_api_key
+SERVER_PORT=8080
+SPRING_PROFILES_ACTIVE=prod
+
+# CORS - Add your production domain
+CORS_ALLOWED_ORIGINS=https://javatheque.yourdomain.com
+
+# Enable secure cookies for HTTPS
+SESSION_COOKIE_SECURE=true
+```
+
+### Docker Deployment
+
+If you're using Docker, pass environment variables to your container:
+
+```bash
+docker run -d \
+  -e MYSQL_ROOT_PASSWORD=secure_password \
+  -e TMDB_API_KEY=your_api_key \
+  -e CORS_ALLOWED_ORIGINS=https://javatheque.yourdomain.com \
+  -e SESSION_COOKIE_SECURE=true \
+  -p 8080:8080 \
+  your-image-name
+```
+
+Or add them to your `docker-compose.yml`:
+
+```yaml
+services:
+  app:
+    environment:
+      - CORS_ALLOWED_ORIGINS=https://javatheque.yourdomain.com
+      - SESSION_COOKIE_SECURE=true
+```
 
 ## Author
 
